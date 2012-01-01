@@ -16,38 +16,48 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-/*
-class Probe {
+// NormalProbe:
+// chrm, coordinate, id, five, three, ref, var
+class NormalProbe {
   public:
-     Probe() {};
-     Probe(std::string);
+     NormalProbe() {};
+     NormalProbe(std::string);
      void print() const {
        cout << "id   : " << id << endl;
        cout << "five : " << five << endl;
-       cout << "three: " << three << endl;
      }
      void set_id(std::string);
-     void set_five(std::string);
-     void set_three(std::string);
      bool check_if_cs(void);
 
-  private:
+  protected:
      std::string id;
      std::string five;
      std::string three;
 };
 
-Probe::Probe(std::string s) {
+NormalProbe::NormalProbe(std::string s) {
   id = "id_this"; five = s ; three = "33333";
 }
-void Probe::set_id(std::string s) { id = s; }
-void Probe::set_five(std::string s) { five = s; }
-void Probe::set_three(std::string s) { three = s; }
-bool Probe::check_if_cs(void) {
-  //return (five[0]=='A' || five[0]=='C' || five[0] == 'G' || five[0] == 'T');
-  return true;
+void NormalProbe::set_id(std::string s) { id = s; }
+bool NormalProbe::check_if_cs(void) { return true; }
+
+// _CSProbe:
+// + cs_five, cs_three, cs_ref, cs_var
+class _CSProbe:public NormalProbe {
+  public:
+    _CSProbe(std::string);
+    void print() const {
+      cout << "CS id   : " << id << endl;
+      cout << "CS five : " << cs_five << endl;
+    }
+  private:
+    std::string cs_five;
+};
+
+_CSProbe::_CSProbe(std::string s) {
+  id = "CS -- id_this"; cs_five = s ; three = "CS -- 33333";
 }
-*/
+
 
 void read_fasta(char **argv)
 {
@@ -122,6 +132,7 @@ namespace cs {
   }
 }
 
+
 // To generate the two base encoding for ref or var:
 // need flaking bases and ref or var nucleotide (in sequence space)
 
@@ -131,6 +142,7 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
+  // Testing the color space routines
   read_fasta(argv);
   //read_probes(argv);
   //play_with_reverse();
@@ -145,6 +157,14 @@ int main(int argc, char **argv) {
   std::cout << i << std::endl;
   cs::two_colors(i, dibase);
   std::cout << dibase << std::endl;
+  std::cout << "///////////////////////////////////////" << std::endl;
+
+  // Testing Probe and subclasses ..
+  NormalProbe np("XXXXXXXXXXX");
+  np.print();
+  std::cout << "_____________" << std::endl;
+  _CSProbe csp("AAAAAAAAAA");
+  csp.print();
 
   return 0;
 }

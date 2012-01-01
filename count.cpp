@@ -132,11 +132,11 @@ void count_main(int argc, char **argv)
   // TODO
   // DONE: 0. Add reverse complement per each probe!
   // If in CS (at load_probes level):
-  // 1. data will come in sequence space always!
-  // 2. convert flaking sequence to CS (even number of colors)
-  // 3. Find two colors for Ref and Var
+  // -> data will come in sequence space always!
+  // DONE. convert flaking sequence to CS (even number of colors)
+  // DONE. Find two colors for Ref and Var
   //
-  // If in CS (at screening level):
+  // 1. Extend probe to have a cs version
 
   // TODO: Free probes
   std::cout << "verbose: " << opt::verbose     << std::endl;
