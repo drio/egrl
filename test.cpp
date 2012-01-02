@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include "probe.h"
+#include "cs_probe.h"
 #include "Util/Util.h"
 #include "Util/SeqReader.h"
 
@@ -39,7 +40,7 @@ NormalProbe::NormalProbe(std::string s) {
   id = "id_this"; five = s ; three = "33333";
 }
 void NormalProbe::set_id(std::string s) { id = s; }
-bool NormalProbe::check_if_cs(void) { return true; }
+bool NormalProbe::check_if_cs(void) { return false; }
 
 // _CSProbe:
 // + cs_five, cs_three, cs_ref, cs_var
@@ -50,6 +51,7 @@ class _CSProbe:public NormalProbe {
       cout << "CS id   : " << id << endl;
       cout << "CS five : " << cs_five << endl;
     }
+    bool check_if_cs();
   private:
     std::string cs_five;
 };
@@ -57,7 +59,7 @@ class _CSProbe:public NormalProbe {
 _CSProbe::_CSProbe(std::string s) {
   id = "CS -- id_this"; cs_five = s ; three = "CS -- 33333";
 }
-
+bool _CSProbe::check_if_cs(void) { return true; }
 
 void read_fasta(char **argv)
 {
@@ -104,67 +106,30 @@ void play_with_reverse()
   std::cout << reverseComplement(ds) << std::endl;
 }
 
-// Useful Color space routines
-namespace cs {
-  google::dense_hash_map<std::string, std::string> stcs;
-  void setup_cs_table()
-  {
-    stcs.set_empty_key("-");
-    stcs["AA"] = "0"; stcs["AC"] = "1"; stcs["AG"] = "2"; stcs["AT"] = "3";
-    stcs["CA"] = "1"; stcs["CC"] = "0"; stcs["CG"] = "3"; stcs["CT"] = "2";
-    stcs["GA"] = "2"; stcs["GC"] = "3"; stcs["GG"] = "0"; stcs["GT"] = "1";
-    stcs["TA"] = "3"; stcs["TC"] = "2"; stcs["TG"] = "1"; stcs["TT"] = "0";
-  }
-
-  // Convert a sequence from sequence space to color space
-  inline void ss_to_cs(std::string &ss, std::string &scs)
-  {
-    for(unsigned int i=0; i<ss.length()-1; i++)
-      scs.append(stcs[ss.substr(i,2)]);
-  }
-
-  // Tell me the dibase color encoding for Y in sequence XYZ
-  // TODO: raise excpetion if input.lenght() != 3
-  inline void two_colors(std::string input, std::string &dibase)
-  {
-    dibase.append(stcs[input.substr(0,2)]);
-    dibase.append(stcs[input.substr(1,2)]);
-  }
-}
-
-
 // To generate the two base encoding for ref or var:
 // need flaking bases and ref or var nucleotide (in sequence space)
-
 int main(int argc, char **argv) {
   if (argc != 3) {
     std::cerr << "./test <reads_file> <probe_file>" << endl;
     exit(EXIT_FAILURE);
   }
 
-  // Testing the color space routines
-  read_fasta(argv);
-  //read_probes(argv);
-  //play_with_reverse();
-  std::string input("ATGGTGGTTGTTA"), output;
-  cs::setup_cs_table();
-  std::cout << input << std::endl;
-  std::cout << "---------\n";
-  cs::ss_to_cs(input, output);
-  std::cout << output << std::endl;
-
-  std::string dibase, i("TCG");
-  std::cout << i << std::endl;
-  cs::two_colors(i, dibase);
-  std::cout << dibase << std::endl;
-  std::cout << "///////////////////////////////////////" << std::endl;
+  // TODO: refactor cs-utils.. it cannot be a namespace...
+  // Look into sga code to get ideas...
+  // Then change CSprobe constructor
+  cout << argv[0] << endl;
+  cout << argc << endl;
+  std::cout << "___________________________________" << std::endl;
 
   // Testing Probe and subclasses ..
-  NormalProbe np("XXXXXXXXXXX");
-  np.print();
-  std::cout << "_____________" << std::endl;
-  _CSProbe csp("AAAAAAAAAA");
-  csp.print();
+  Probe np("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A");
+  std::cout << np.is_cs() << std::endl;
+  std::cout << np.get_five_p() << std::endl;
+
+  std::cout << "____" << std::endl;
+
+  CSProbe csp("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A");
+  std::cout << csp.get_cs_five_p() << std::endl;
 
   return 0;
 }

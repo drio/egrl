@@ -12,14 +12,14 @@ class Probe {
 
     void set_all(std::string, std::string, std::string,
                  std::string, std::string, std::string, std::string);
-    bool in_cs(void); // Check to see if we are dealing with a CS probe
+    bool is_cs(void) { return false; };
     std::string get_chrm(void) { return chrm; };
     std::string get_coordinates(void) { return coordinates; };
     std::string get_id(void) { return id; };
     std::string get_five_p(void) { return five_p; };
     std::string get_three_p(void) { return three_p; };
 
-  private:
+  protected:
     std::string chrm;
     std::string coordinates;
     std::string id;

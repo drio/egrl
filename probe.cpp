@@ -23,9 +23,3 @@ void Probe::set_all(std::string c   , std::string coor, std::string id_,
   var         = var_;
 }
 
-bool Probe::in_cs(void) {
-  return (five_p[0] == '0' || five_p[0] == '1' ||
-          five_p[0] == '2' || five_p[0] == '3');
-}
-
-
