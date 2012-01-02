@@ -83,10 +83,10 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +25 Makefile
-badd +1 test.cpp
+badd +16 Makefile
+badd +129 test.cpp
 badd +35 egrl.cpp
-badd +138 count.cpp
+badd +55 count.cpp
 badd +107 ~/tmp/sga/src/SGA/sga.cpp
 badd +199 ~/tmp/sga/src/SGA/preprocess.cpp
 badd +12 count.h
@@ -98,14 +98,18 @@ badd +65 util/DNAString.cpp
 badd +77 util/DNAString.h
 badd +206 ~/tmp/sga/src/SGA/scaffold.cpp
 badd +132 ~/tmp/sga/src/SGA/scaffold2fasta.cpp
-badd +23 probe.cpp
-badd +30 probe.h
+badd +14 probe.cpp
+badd +16 probe.h
 badd +1 config.h
 badd +20 Util/DNADouble.h
 badd +1 Util/DNADouble.cpp
 badd +48 Util/Alphabet.cpp
 badd +213 Util/Alphabet.h
 badd +21 ~/Dropbox/git_repo/v1.egenotype/core/cs.cpp
+badd +13 cs_probe.h
+badd +7 cs_probe.cpp
+badd +17 cs_utils.h
+badd +10 cs_utils.cpp
 args \[BufExplorer]
 edit test.cpp
 set splitbelow splitright
@@ -225,33 +229,64 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-21,42fold
-62,73fold
-75,98fold
-100,105fold
-107,133fold
-145,159fold
+23,44fold
+21,63fold
+21,63fold
+65,76fold
+78,101fold
+103,108fold
+110,120fold
+122,138fold
+122,138fold
+148,151fold
+148,151fold
+155,155fold
+155,156fold
 21
 normal zo
-62
+21
+normal zo
+23
 normal zc
-75
+21
 normal zc
-100
+21
 normal zc
-107
+65
 normal zc
-145
+78
 normal zc
-let s:l = 58 - ((14 * winheight(0) + 24) / 48)
+103
+normal zc
+110
+normal zc
+122
+normal zo
+122
+normal zc
+122
+normal zo
+148
+normal zo
+148
+normal zc
+148
+normal zo
+155
+normal zo
+155
+normal zo
+155
+normal zo
+let s:l = 148 - ((139 * winheight(0) + 24) / 48)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-58
-normal! 027l
+148
+normal! 0
 wincmd w
 argglobal
-edit count.cpp
+edit cs_utils.h
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -357,12 +392,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 141 - ((41 * winheight(0) + 24) / 48)
+let s:l = 25 - ((24 * winheight(0) + 24) / 48)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-141
-normal! 09l
+25
+normal! 016l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 87 + 87) / 175)
 exe 'vert 2resize ' . ((&columns * 87 + 87) / 175)

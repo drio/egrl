@@ -10,6 +10,7 @@
 #include "config.h"
 #include "probe.h"
 #include "cs_probe.h"
+#include "cs_utils.h"
 #include "Util/Util.h"
 #include "Util/SeqReader.h"
 
@@ -106,6 +107,38 @@ void play_with_reverse()
   std::cout << reverseComplement(ds) << std::endl;
 }
 
+void test_probe_class()
+{
+  std::cout << ">> TESTING probe class" << std::endl;
+  Probe np("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A");
+  std::cout << "Is in a cs probe? " << np.is_cs() << std::endl;
+  std::cout << "five_p attibute: "  << np.get_five_p() << std::endl;
+
+  // Notice that we need a CSUtils object to be passed in the constructor
+  CSUtils csu;
+  CSProbe csp("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A", csu);
+  std::cout << "five_p (CS) seq: " << csp.get_cs_five_p() << std::endl;
+  std::cout << std::endl;
+}
+
+void test_csutils()
+{
+  std::cout << ">> TESTING csutils class" << std::endl;
+
+  CSUtils csu;
+  std::string tmp("ACACACAC"), out;
+  std::cout << "Input sequence: " << tmp << std::endl;
+  csu.to_cs(tmp, out);
+  std::cout << "to_cs: " << out << std::endl;
+
+  tmp = "ACA";
+  std::string tc;
+  std::cout << "Tribase: "    << tmp << std::endl;
+  csu.two_colors(tmp, tc);
+  std::cout << "two_colors: " << tc << std::endl;
+  std::cout << std::endl;
+}
+
 // To generate the two base encoding for ref or var:
 // need flaking bases and ref or var nucleotide (in sequence space)
 int main(int argc, char **argv) {
@@ -114,22 +147,12 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  // TODO: refactor cs-utils.. it cannot be a namespace...
-  // Look into sga code to get ideas...
-  // Then change CSprobe constructor
+  // To avoid warning to break compilation
   cout << argv[0] << endl;
-  cout << argc << endl;
-  std::cout << "___________________________________" << std::endl;
+  cout << argc << endl << endl;
 
-  // Testing Probe and subclasses ..
-  Probe np("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A");
-  std::cout << np.is_cs() << std::endl;
-  std::cout << np.get_five_p() << std::endl;
-
-  std::cout << "____" << std::endl;
-
-  CSProbe csp("1       100006955       rs4908018       TTTGTCTAAAACAAC CTTTCACTAGGCTCA C       A");
-  std::cout << csp.get_cs_five_p() << std::endl;
+  test_probe_class();
+  test_csutils();
 
   return 0;
 }
