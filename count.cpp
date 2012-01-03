@@ -110,6 +110,8 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes)
   std::string line;
   std::stringstream ss;
   while (getline(*probes, line)) {
+    // TODO: check if probe already there, if so, ignore.
+    //       Otherwise we will have memory leaks
     Probe *p                         = new Probe(line);
     std::string key                  = p->get_five_p() + "N" + p->get_three_p();
     h_probes[key]                    = p;
