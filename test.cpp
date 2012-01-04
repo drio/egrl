@@ -225,6 +225,53 @@ void set_others(void) {
   cout << "o2: "  << o2  << endl;
 }
 
+void screen(void)
+{
+  google::dense_hash_map<std::string, int> h_probes;
+  h_probes.set_empty_key("");
+  std::string read("012345678901234");
+  h_probes["23456"] = 1;
+  h_probes["R"] = 1;
+  int probe_length = h_probes.begin()->first.length();
+
+  cout << read << endl;
+  cout << probe_length << endl;
+  cout << endl;
+  for (unsigned int i=0; i+probe_length<=read.length(); i++) {
+    cout << read.substr(i,probe_length) << endl;
+  }
+
+  std::string tmp("12345");
+  cout << tmp[(5/2)+1] << endl;
+
+  std::string foo(" ");
+  foo[0] = tmp[2];
+  cout << "+ " << foo << endl;
+
+  cout << "+ .size(): " << h_probes.size()  << endl;
+  if (h_probes["R"]) {
+    cout << "+ found!! " << endl;
+  }
+  cout << "+ .size(): " << h_probes.size()  << endl;
+
+  tmp = "R";
+  google::dense_hash_map<std::string, int>::iterator i;
+  i = h_probes.find(tmp);
+  if (i != h_probes.end())
+    std::cout << "+ Found " << i->first << std::endl;
+}
+
+void test_iterator(google::dense_hash_map<std::string, int *> &h_probes)
+{
+  std::string tmp = "foo";
+  google::dense_hash_map<std::string, int*>::iterator i;
+  i = h_probes.find(tmp);
+  if (i != h_probes.end())
+    std::cout << "+ Found " <<  i->first << std::endl;
+  else
+    std::cout << "NOT Found "<< std::endl;
+}
+
 // To generate the two base encoding for ref or var:
 // need flaking bases and ref or var nucleotide (in sequence space)
 int main(int argc, char **argv) {
@@ -237,9 +284,17 @@ int main(int argc, char **argv) {
   cout << argv[0] << endl; cout << argc << endl << endl;
 
   //play_mom_class();
-  test_probe_class();
+  //test_probe_class();
   //test_csutils();
   //set_others();
+  //screen();
+
+  // Testing iterators
+  google::dense_hash_map<std::string, int *> h_probes;
+  h_probes.set_empty_key("");
+  int i = 1;
+  h_probes["foo"] = &i;
+  test_iterator(h_probes);
 
   // The screening algorithm will look like this (assuming I have already
   // anchored a window in a read):

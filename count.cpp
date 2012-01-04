@@ -109,15 +109,39 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes)
 
   std::string line;
   std::stringstream ss;
+  Probe *p;
+  // TODO: Confirm that the probe size is constant
+  //
   while (getline(*probes, line)) {
-    // TODO: check if probe already there, if so, ignore.
-    //       Otherwise we will have memory leaks
-    Probe *p                         = new Probe(line);
+    // TODO: check if probe already there, if so, ignore, otherwise we will have memory leaks
+    p                                = new Probe(line);
     std::string key                  = p->get_five_p() + "N" + p->get_three_p();
     h_probes[key]                    = p;
     h_probes[reverseComplement(key)] = p;
   }
 }
+
+void screen_reads(google::dense_hash_map<std::string, Probe*> &h_probes,
+                  int probe_length)
+{
+  SeqReader reader(opt::reads_file, SRF_NO_VALIDATION);
+  SeqRecord record;
+  google::dense_hash_map<std::string, Probe *>::iterator p_iter;
+  const int n_pos = probe_length/2;
+
+  while(reader.get(record)) {
+    static std::string read = record.seq.toString();
+    for (unsigned int i=0; i+probe_length<=read.length(); i++) {
+      static std::string window  = read.substr(i,probe_length);
+      static std::string n_value(" ");
+      n_value[0] = window[n_pos];
+      window[n_pos] = 'N';
+      if ((p_iter = h_probes.find(window)) != h_probes.end())
+        p_iter->second->update_counters(n_value);
+    }
+  }
+}
+void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes) { }
 
 //1       730720  drio2   GTGTCAGTGATAGAA GGTCATGGGATCTTT C       T
 //1       711153  drio1   10020220202     02010132202     C       G       30      03
@@ -130,15 +154,14 @@ void count_main(int argc, char **argv)
   google::dense_hash_map<std::string, Probe*> h_probes;
   h_probes.set_empty_key("-");
   load_probes(h_probes);
-  std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
-  // TODO
-  // DONE: 0. Add reverse complement per each probe!
-  // If in CS (at load_probes level):
-  // -> data will come in sequence space always!
-  // DONE. convert flaking sequence to CS (even number of colors)
-  // DONE. Find two colors for Ref and Var
-  //
-  // 1. Extend probe to have a cs version
+
+  std::cerr << "BEFORE # of probes (RC included): " << h_probes.size() << std::endl;
+
+  int probe_length = h_probes.begin()->first.length();
+  screen_reads(h_probes, probe_length);
+  dump_results(h_probes);
+
+  std::cerr << std::endl << "AFTER # of probes (RC included): " << h_probes.size() << std::endl;
 
   // TODO: Free probes
   std::cout << "verbose: " << opt::verbose     << std::endl;

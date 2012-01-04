@@ -10,5 +10,6 @@
 void parse_count_options(int, char **);
 void count_main(int, char **);
 void load_probes(google::dense_hash_map<std::string, Probe*> *);
+void screen_reads(google::dense_hash_map<std::string, Probe*> *, int);
 
 #endif

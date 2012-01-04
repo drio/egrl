@@ -1,7 +1,7 @@
 #
 SHELL=bash
 CC=g++
-CFLAGS=-Wall -Wextra -Werror -g -IUtil/ -IThirdparty/
+CFLAGS=-03 -Wall -Wextra -g -IUtil/ -IThirdparty/ #-Werror
 LDFLAGS=-lm -lz -LUtil/ -LThirdparty/
 OBJS=probe.o count.o cs_probe.o cs_utils.o
 O_UTIL=Util/SeqReader.o Util/Util.o Util/DNAString.o
