@@ -9,6 +9,10 @@ Probe::Probe(std::string line)
   ss << line;
   ss >> chrm >> coordinates >> id >> five_p >> three_p >> ref >> var;
   counters = NULL;
+  visited = 0;
+  rc = NULL;
+  hits = 0;
+  is_a_rc_probe = 0;
 }
 
 Probe::~Probe() {
@@ -36,6 +40,7 @@ void Probe::update_counters(std::string as)
   if (counters == NULL) {
     setup_counters();
     find_other_alleles();
+    hits++;
   }
   if (as == "A" || as == "C" || as == "G" || as == "T") (*counters)[as]++;
   else (*counters)["N"]++;
@@ -73,4 +78,53 @@ void Probe::info(void)
             << var << "|" << (*counters)[var] << " "
             << o1  << "|" << (*counters)[o1]  << " "
             << o2  << "|" << (*counters)[o2]  << std::endl;
+}
+
+void Probe::get_counters(int *ac) // ac: array counters
+{
+  if (hits) {
+    ac[0] = (*counters)[ref];
+    ac[1] = (*counters)[var];
+    ac[2] = (*counters)[o1];
+    ac[3] = (*counters)[o2];
+    ac[4] = (*counters)["N"];
+  }
+  else {
+    ac[0] = 0;
+    ac[1] = 0;
+    ac[2] = 0;
+    ac[3] = 0;
+    ac[4] = 0;
+  }
+
+  /*
+  std::cout << chrm << "," << coordinates << "," << id << ","
+            << ref << "," << var << ","
+
+            << (*counters)[ref] << "," << (*counters)[var] << ","
+            << (*counters)[o1]  << "," << (*counters)[o2] << ","
+            << (*counters)["N"] << ","
+
+            << (*rc_c)[ref] << "," << (*rc_c)[var]
+            << (*rc_c)[o1]  << "," << (*rc_c)[o2]
+            << (*rc_c)["N"] << ","
+
+            << (*counters)[ref] + (*rc_c)[ref] << ","
+            << (*counters)[var] + (*rc_c)[var] << ","
+            << (*counters)[o1] + (*rc_c)[o1] << ","
+            << (*counters)[o2] + (*rc_c)[o2] << ","
+            << (*counters)["N"] + (*rc_c)["N"]
+
+            << std::endl;
+  */
+
+}
+
+void Probe::set_rc()
+{
+  three_p = reverseComplement(three_p);
+  five_p  = reverseComplement(five_p);
+  ref     = reverseComplement(ref);
+  var     = reverseComplement(var);
+  is_a_rc_probe = 1;
 }

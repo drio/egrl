@@ -109,15 +109,21 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes)
 
   std::string line;
   std::stringstream ss;
-  Probe *p;
+  Probe *p, *rc_p;
   // TODO: Confirm that the probe size is constant
   //
   while (getline(*probes, line)) {
     // TODO: check if probe already there, if so, ignore, otherwise we will have memory leaks
-    p                                = new Probe(line);
+    p       = new Probe(line);
+    rc_p    = new Probe(line);
+    rc_p->set_rc();
+
+    rc_p->set_rc_p(p);
+    p->set_rc_p(rc_p);
+
     std::string key                  = p->get_five_p() + "N" + p->get_three_p();
     h_probes[key]                    = p;
-    h_probes[reverseComplement(key)] = p;
+    h_probes[reverseComplement(key)] = rc_p;
   }
 }
 
@@ -130,10 +136,10 @@ void screen_reads(google::dense_hash_map<std::string, Probe*> &h_probes,
   const int n_pos = probe_length/2;
 
   while(reader.get(record)) {
-    static std::string read = record.seq.toString();
+    std::string read = record.seq.toString();
     for (unsigned int i=0; i+probe_length<=read.length(); i++) {
-      static std::string window  = read.substr(i,probe_length);
-      static std::string n_value(" ");
+      std::string window  = read.substr(i,probe_length);
+      std::string n_value(" ");
       n_value[0] = window[n_pos];
       window[n_pos] = 'N';
       if ((p_iter = h_probes.find(window)) != h_probes.end())
@@ -141,7 +147,49 @@ void screen_reads(google::dense_hash_map<std::string, Probe*> &h_probes,
     }
   }
 }
-void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes) { }
+void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes)
+{
+  int cs1[5], cs2[5];
+  Probe *op; // Original probe
+
+  google::dense_hash_map<std::string, Probe *>::iterator p_iter;
+  for (p_iter=h_probes.begin(); p_iter!=h_probes.end(); p_iter++) {
+    op = p_iter->second->is_a_rc_probe ? p_iter->second->rc : p_iter->second;
+    if (!op->visited && (op->has_hits() || op->rc->has_hits())) {
+      op->get_counters(cs1);
+      op->rc->get_counters(cs2);
+      std::cout
+        << op->get_chrm() << ","
+        << op->get_coordinates() <<  ","
+        << op->get_id() <<  ","
+        << op->get_ref() <<  ","
+        << op->get_var() <<  ","
+
+        << cs1[0] << ","
+        << cs1[1] << ","
+        << cs1[2] << ","
+        << cs1[3] << ","
+        << cs1[4] << ","
+
+        << cs2[0] << ","
+        << cs2[1] << ","
+        << cs2[2] << ","
+        << cs2[3] << ","
+        << cs2[4] << ","
+
+        << cs1[0] + cs2[0] << ","
+        << cs1[1] + cs2[1] << ","
+        << cs1[2] + cs2[2] << ","
+        << cs1[3] + cs2[3] << ","
+        << cs1[4] + cs2[4]
+
+        << std::endl;
+
+      op->visited = 1;
+      op->rc->visited = 1;
+    }
+  }
+}
 
 //1       730720  drio2   GTGTCAGTGATAGAA GGTCATGGGATCTTT C       T
 //1       711153  drio1   10020220202     02010132202     C       G       30      03
@@ -155,18 +203,18 @@ void count_main(int argc, char **argv)
   h_probes.set_empty_key("-");
   load_probes(h_probes);
 
-  std::cerr << "BEFORE # of probes (RC included): " << h_probes.size() << std::endl;
-
   int probe_length = h_probes.begin()->first.length();
   screen_reads(h_probes, probe_length);
   dump_results(h_probes);
 
-  std::cerr << std::endl << "AFTER # of probes (RC included): " << h_probes.size() << std::endl;
+  std::cerr << std::endl << "# of probes (RC included): " << h_probes.size() << std::endl;
 
   // TODO: Free probes
+  /*
   std::cout << "verbose: " << opt::verbose     << std::endl;
   std::cout << "cs     : " << opt::cs_data     << std::endl;
   std::cout << "probes : " << opt::probes_file << std::endl;
   std::cout << "reads  : " << opt::reads_file  << std::endl;
+  */
 }
 
