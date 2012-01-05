@@ -134,19 +134,22 @@ void screen_reads(google::dense_hash_map<std::string, Probe*> &h_probes,
   SeqRecord record;
   google::dense_hash_map<std::string, Probe *>::iterator p_iter;
   const int n_pos = probe_length/2;
+  std::string read;
+  std::string window;
+  std::string n_value(" ");
 
   while(reader.get(record)) {
-    std::string read = record.seq.toString();
+    read = record.seq.toString();
     for (unsigned int i=0; i+probe_length<=read.length(); i++) {
-      std::string window  = read.substr(i,probe_length);
-      std::string n_value(" ");
-      n_value[0] = window[n_pos];
+      window        = read.substr(i,probe_length);
+      n_value[0]    = window[n_pos];
       window[n_pos] = 'N';
       if ((p_iter = h_probes.find(window)) != h_probes.end())
         p_iter->second->update_counters(n_value);
     }
   }
 }
+
 void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes)
 {
   int cs1[5], cs2[5];
@@ -154,6 +157,7 @@ void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes)
 
   google::dense_hash_map<std::string, Probe *>::iterator p_iter;
   for (p_iter=h_probes.begin(); p_iter!=h_probes.end(); p_iter++) {
+    // In op we want always the original probe, not the rc one
     op = p_iter->second->is_a_rc_probe ? p_iter->second->rc : p_iter->second;
     if (!op->visited && (op->has_hits() || op->rc->has_hits())) {
       op->get_counters(cs1);
@@ -191,8 +195,6 @@ void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes)
   }
 }
 
-//1       730720  drio2   GTGTCAGTGATAGAA GGTCATGGGATCTTT C       T
-//1       711153  drio1   10020220202     02010132202     C       G       30      03
 void count_main(int argc, char **argv)
 {
   parse_count_options(argc, argv);
@@ -201,10 +203,13 @@ void count_main(int argc, char **argv)
   //google::sparse_hash_map<std::string, Probe*> h_probes;
   google::dense_hash_map<std::string, Probe*> h_probes;
   h_probes.set_empty_key("-");
+  std::cerr << std::endl << ">> loading probes" << std::endl;
   load_probes(h_probes);
 
   int probe_length = h_probes.begin()->first.length();
+  std::cerr << std::endl << ">> screening reads" << std::endl;
   screen_reads(h_probes, probe_length);
+  std::cerr << std::endl << ">> dumping" << std::endl;
   dump_results(h_probes);
 
   std::cerr << std::endl << "# of probes (RC included): " << h_probes.size() << std::endl;
