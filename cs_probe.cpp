@@ -5,6 +5,7 @@
 CSProbe::CSProbe(std::string line, CSUtils *_csu) : Probe(line)
 {
   csu = _csu;
+  std::string tmp;
   csu->to_cs(three_p, cs_three_p);
   csu->to_cs(five_p, cs_five_p);
 }
@@ -18,6 +19,7 @@ void CSProbe::update_counters(std::string db)
     setup_counters();
     find_other_alleles();
     to_cs();
+    hits++;
   }
   if      (db == cs_ref) (*counters)[ref]++;
   else if (db == cs_var) (*counters)[var]++;
@@ -49,4 +51,23 @@ void CSProbe::to_cs(void)
   csu->two_colors(tb, cs_o1);
   tb = five_p.substr(five_p.size()-1, 1) + o2 + three_p.substr(0, 1);
   csu->two_colors(tb, cs_o2);
+}
+
+void CSProbe::set_rc()
+{
+  std::string tmp = three_p;
+  tmp             = reverseComplement(five_p);
+  five_p          = reverseComplement(three_p);
+  three_p         = tmp;
+  ref             = reverseComplement(ref);
+  var             = reverseComplement(var);
+
+  // TODO: Without this two next statements, the lengths of the strings are not
+  // the expected. see test:test_probe_class for testing.
+  cs_three_p = "";
+  cs_five_p  = "";
+  csu->to_cs(three_p, cs_three_p);
+  csu->to_cs(five_p, cs_five_p);
+
+  is_a_rc_probe   = 1;
 }

@@ -14,11 +14,16 @@ class CSProbe:public Probe {
     CSProbe(std::string, CSUtils *);
     //~CSProbe() {};
     bool is_cs() {return true;}; // This is a CS probe
-    std::string get_cs_five_p(void) { return cs_five_p; };
     // Rewrite the method of Probe since it is different for a CS probe
     // We will receive a dibase not a nucleotide
     void update_counters(std::string);
     void cs_info(void);
+    std::string get_cs_five_p(void)      { return cs_five_p; };
+    std::string get_cs_three_p(void)     { return cs_three_p; };
+    void set_rc_p(CSProbe *p)            { rc = p; };
+    CSProbe *rc;    // Reverse complement version of the probe
+    char visited; // To determine if we have already process this probe
+    void set_rc(void);
 
   private:
     std::string cs_five_p;

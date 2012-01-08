@@ -101,14 +101,9 @@ void parse_count_options(int argc, char **argv)
   }
 }
 
-void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes)
+void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes, std::istream *probes)
 {
-  std::istream* probes;
-  probes = (opt::probes_file == "-") ?
-           &std::cin : createReader(opt::probes_file);
-
   std::string line;
-  std::stringstream ss;
   Probe *p, *rc_p;
   // TODO: Confirm that the probe size is constant
   //
@@ -123,7 +118,8 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes)
 
     std::string key                  = p->get_five_p() + "N" + p->get_three_p();
     h_probes[key]                    = p;
-    h_probes[reverseComplement(key)] = rc_p;
+    key                              = rc_p->get_five_p() + "N" + rc_p->get_three_p();
+    h_probes[key]                    = rc_p;
   }
 }
 
@@ -195,26 +191,135 @@ void dump_results(google::dense_hash_map<std::string, Probe*> &h_probes)
   }
 }
 
+void cs_load_probes(google::dense_hash_map<std::string, CSProbe*> &h_probes,
+                    std::istream *probes,
+                    CSUtils *csu)
+{
+  std::string line;
+  CSProbe *p, *rc_p;
+
+  // TODO: Confirm that the probe size is constant
+  //
+  // TODO: There is no need to store all the sequence information of the probe
+  while (getline(*probes, line)) {
+    // TODO: check if probe already there, if so, ignore, otherwise we will have memory leaks
+    p       = new CSProbe(line, csu);
+    rc_p    = new CSProbe(line, csu);
+    rc_p->set_rc();
+
+    rc_p->set_rc_p(p);
+    p->set_rc_p(rc_p);
+
+    std::string key                  = p->get_cs_five_p() + "NN" + p->get_cs_three_p();
+    h_probes[key]                    = p;
+    key                              = rc_p->get_cs_five_p() + "NN" + rc_p->get_cs_three_p();
+    h_probes[key] = rc_p;
+  }
+}
+
+void cs_screen_reads(google::dense_hash_map<std::string, CSProbe*> &h_probes,
+                     int probe_length)
+{
+  SeqReader reader(opt::reads_file, SRF_NO_VALIDATION);
+  SeqRecord record;
+  google::dense_hash_map<std::string, CSProbe *>::iterator p_iter;
+  const int n_pos = (probe_length/2)-1;
+  std::string read;
+  std::string window;
+  std::string n_value("  ");
+
+  while(reader.get(record)) {
+    read = record.seq.toString();
+    for (unsigned int i=0; i+probe_length<=read.length(); i++) {
+      window          = read.substr(i,probe_length);
+      n_value[0]      = window[n_pos];
+      n_value[1]      = window[n_pos+1];
+      window[n_pos]   = 'N';
+      window[n_pos+1] = 'N';
+      if ((p_iter = h_probes.find(window)) != h_probes.end())
+        p_iter->second->update_counters(n_value);
+    }
+  }
+}
+
+void cs_dump_results(google::dense_hash_map<std::string, CSProbe*> &h_probes)
+{
+  int cs1[5], cs2[5];
+  CSProbe *op; // Original probe
+
+  google::dense_hash_map<std::string, CSProbe *>::iterator p_iter;
+  for (p_iter=h_probes.begin(); p_iter!=h_probes.end(); p_iter++) {
+    // In op we want always the original probe, not the rc one
+    op = p_iter->second->is_a_rc_probe ? p_iter->second->rc : p_iter->second;
+    if (!op->visited && (op->has_hits() || op->rc->has_hits())) {
+      op->get_counters(cs1);
+      op->rc->get_counters(cs2);
+      std::cout
+        << op->get_chrm() << ","
+        << op->get_coordinates() <<  ","
+        << op->get_id() <<  ","
+        << op->get_ref() <<  ","
+        << op->get_var() <<  ","
+
+        << cs1[0] << ","
+        << cs1[1] << ","
+        << cs1[2] << ","
+        << cs1[3] << ","
+        << cs1[4] << ","
+
+        << cs2[0] << ","
+        << cs2[1] << ","
+        << cs2[2] << ","
+        << cs2[3] << ","
+        << cs2[4] << ","
+
+        << cs1[0] + cs2[0] << ","
+        << cs1[1] + cs2[1] << ","
+        << cs1[2] + cs2[2] << ","
+        << cs1[3] + cs2[3] << ","
+        << cs1[4] + cs2[4]
+
+        << std::endl;
+
+      op->visited = 1;
+      op->rc->visited = 1;
+    }
+  }
+}
+
+
 void count_main(int argc, char **argv)
 {
   parse_count_options(argc, argv);
 
-  // Load probes into hash
-  //google::sparse_hash_map<std::string, Probe*> h_probes;
-  google::dense_hash_map<std::string, Probe*> h_probes;
-  h_probes.set_empty_key("-");
-  std::cerr << std::endl << ">> loading probes" << std::endl;
-  load_probes(h_probes);
+  std::istream* probes_stream;
+  probes_stream = (opt::probes_file == "-") ?
+                  &std::cin : createReader(opt::probes_file);
 
-  int probe_length = h_probes.begin()->first.length();
-  std::cerr << std::endl << ">> screening reads" << std::endl;
-  screen_reads(h_probes, probe_length);
-  std::cerr << std::endl << ">> dumping" << std::endl;
-  dump_results(h_probes);
+  if (opt::cs_data) {
+    CSUtils csu;
+    google::dense_hash_map<std::string, CSProbe*> h_probes;
+    h_probes.set_empty_key("-");
+    cs_load_probes(h_probes, probes_stream, &csu);
+    std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
+    int probe_length = h_probes.begin()->first.length();
+    cs_screen_reads(h_probes, probe_length);
+    cs_dump_results(h_probes);
+  }
+  else {
+    google::dense_hash_map<std::string, Probe*> h_probes;
+    h_probes.set_empty_key("-");
+    load_probes(h_probes, probes_stream);
+    std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
+    int probe_length = h_probes.begin()->first.length();
+    screen_reads(h_probes, probe_length);
+    dump_results(h_probes);
+  }
 
-  std::cerr << std::endl << "# of probes (RC included): " << h_probes.size() << std::endl;
-
+  //std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
+  delete probes_stream;
   // TODO: Free probes
+
   /*
   std::cout << "verbose: " << opt::verbose     << std::endl;
   std::cout << "cs     : " << opt::cs_data     << std::endl;

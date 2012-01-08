@@ -173,6 +173,26 @@ void test_probe_class()
 
   csp.cs_info();
 
+  std::cout << ">> TESTING probe small" << std::endl;
+  Probe csp_2("1       100006955       rs4908018       ACT GAT C       A");
+  Probe rcp("1       100006955       rs4908018       ACT GAT C       A");
+  rcp.set_rc();
+  std::cout << "five_p (SS) seq: " << csp_2.get_five_p() << " N " <<  csp_2.get_three_p() << std::endl;
+  std::cout << "RCP five_p (SS) seq: " << rcp.get_five_p() << " N " <<  rcp.get_three_p() << std::endl;
+  csp_2.update_counters("A"); csp_2.update_counters("C");
+  csp_2.update_counters(".");
+
+  std::cout << ">> TESTING probe CS small" << std::endl;
+  CSProbe _rc("1       100006955       rs4908018       ACT GAT C       A", &csu);
+  std::cout << "normal: " << _rc.get_five_p() << " N " <<  _rc.get_three_p() << std::endl;
+  std::cout << "normal: " << _rc.get_cs_five_p() << " N " <<  _rc.get_cs_three_p() << std::endl;
+  _rc.set_rc();
+  std::cout << "rc    : " << _rc.get_five_p() << " N " <<  _rc.get_three_p() << std::endl;
+  std::cout << "rc    : " << _rc.get_cs_five_p() << " N " <<  _rc.get_cs_three_p() << std::endl;
+  csp_2.update_counters("22"); csp_2.update_counters("22");
+  csp_2.update_counters(".");
+
+
   std::cout << std::endl;
 }
 
@@ -284,7 +304,7 @@ int main(int argc, char **argv) {
   cout << argv[0] << endl; cout << argc << endl << endl;
 
   //play_mom_class();
-  //test_probe_class();
+  test_probe_class();
   //test_csutils();
   //set_others();
   //screen();

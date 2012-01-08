@@ -74,10 +74,12 @@ void Probe::find_other_alleles(void)
 
 void Probe::info(void)
 {
+  std::cout << "info ..";
   std::cout << ref << "|" << (*counters)[ref] << " "
             << var << "|" << (*counters)[var] << " "
             << o1  << "|" << (*counters)[o1]  << " "
-            << o2  << "|" << (*counters)[o2]  << std::endl;
+            << o2  << "|" << (*counters)[o2]
+            << " visited: " << (int)visited << std::endl;
 }
 
 void Probe::get_counters(int *ac) // ac: array counters
@@ -122,9 +124,11 @@ void Probe::get_counters(int *ac) // ac: array counters
 
 void Probe::set_rc()
 {
-  three_p = reverseComplement(three_p);
-  five_p  = reverseComplement(five_p);
-  ref     = reverseComplement(ref);
-  var     = reverseComplement(var);
-  is_a_rc_probe = 1;
+  std::string tmp = three_p;
+  tmp             = reverseComplement(five_p);
+  five_p          = reverseComplement(three_p);
+  three_p         = tmp;
+  ref             = reverseComplement(ref);
+  var             = reverseComplement(var);
+  is_a_rc_probe   = 1;
 }
