@@ -7,5 +7,7 @@ DONE Add CS support
 - add regression tests
 - Heap/cpu profiling
 - autools support
+- Testing concordance against human chip with illumina/solid data.
+- Write README.md
 - Add multithreading
 - Use sga method (FM-index) to hash reads -> that allows for mismatches
