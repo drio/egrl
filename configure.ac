@@ -23,8 +23,24 @@ if test "$with_sparsehash" -a -d "$with_sparsehash"; then
   sparsehash_include="-I$with_sparsehash/include"
 fi
 
+# Google perf tools
+AC_ARG_ENABLE(tcmalloc, [  --disable-tcmalloc disable tcmalloc for memory allocation], [], [AC_CHECK_LIB([tcmalloc],malloc)])
+AC_ARG_ENABLE(perftools, [  --enable-perftools  enable google performance tools for profiling and heap checking], [LDFLAGS="${LDFLAGS} -Wl --no-as-needed -lprofiler"; LDADD="${LDADD} -lprofiler"], [])
+
+#
+AC_MSG_CHECKING(whether this is a git repository)
+gitrev="`git log 2>/dev/null | grep -m 1 commit | awk '{print $2}'`";
+if test -n "${gitrev}"; then
+    GITREV="${gitrev}";
+    AC_REVISION(["${GITREV}"])
+    AC_DEFINE_UNQUOTED(GIT_REV, "${GITREV}", [Define to be the git revision number])
+    AC_MSG_RESULT(yes)
+else
+    AC_MSG_RESULT(no)
+fi
+
 # Set compiler flags.
-AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -Werror")
+AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -Werror -g")
 AC_SUBST(CXXFLAGS, "-O3")
 AC_SUBST(CFLAGS, "-O3")
 AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include $bamtools_include")
