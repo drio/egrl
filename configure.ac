@@ -46,7 +46,6 @@ AC_SUBST(CFLAGS, "-O3")
 AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include $bamtools_include")
 
 # Ensure the sparse hash is available
-# Not using sparse_hash_map but I will check for it anyway.
 AC_CHECK_HEADERS([google/sparse_hash_map],,[AC_MSG_ERROR([google sparse hash library is required: http://code.google.com/p/google-sparsehash/])])
 AC_CHECK_HEADERS([google/dense_hash_map],,[AC_MSG_ERROR([google sparse hash library is required: http://code.google.com/p/google-sparsehash/])])
 
