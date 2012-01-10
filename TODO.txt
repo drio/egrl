@@ -11,3 +11,4 @@ DONE Add CS support
 - Write README.md
 - Add multithreading
 - Use sga method (FM-index) to hash reads -> that allows for mismatches
+- cloud mode
