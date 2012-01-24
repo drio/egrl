@@ -116,10 +116,10 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes, std::ist
     rc_p->set_rc_p(p);
     p->set_rc_p(rc_p);
 
-    std::string key                  = p->get_five_p() + "N" + p->get_three_p();
-    h_probes[key]                    = p;
-    key                              = rc_p->get_five_p() + "N" + rc_p->get_three_p();
-    h_probes[key]                    = rc_p;
+    std::string key = p->get_five_p() + "N" + p->get_three_p();
+    h_probes[key]   = p;
+    key             = rc_p->get_five_p() + "N" + rc_p->get_three_p();
+    h_probes[key]   = rc_p;
   }
 }
 
@@ -210,10 +210,10 @@ void cs_load_probes(google::dense_hash_map<std::string, CSProbe*> &h_probes,
     rc_p->set_rc_p(p);
     p->set_rc_p(rc_p);
 
-    std::string key                  = p->get_cs_five_p() + "NN" + p->get_cs_three_p();
-    h_probes[key]                    = p;
-    key                              = rc_p->get_cs_five_p() + "NN" + rc_p->get_cs_three_p();
-    h_probes[key] = rc_p;
+    std::string key = p->get_cs_five_p() + "NN" + p->get_cs_three_p();
+    h_probes[key]   = p;
+    key             = rc_p->get_cs_five_p() + "NN" + rc_p->get_cs_three_p();
+    h_probes[key]   = rc_p;
   }
 }
 
@@ -286,7 +286,6 @@ void cs_dump_results(google::dense_hash_map<std::string, CSProbe*> &h_probes)
     }
   }
 }
-
 
 void count_main(int argc, char **argv)
 {
