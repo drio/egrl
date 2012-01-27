@@ -24,7 +24,7 @@ if test "$with_sparsehash" -a -d "$with_sparsehash"; then
 fi
 
 # Google perf tools
-AC_ARG_ENABLE(tcmalloc, [  --disable-tcmalloc disable tcmalloc for memory allocation], [], [AC_CHECK_LIB([tcmalloc],malloc)])
+#AC_ARG_ENABLE(tcmalloc, [  --disable-tcmalloc disable tcmalloc for memory allocation], [], [AC_CHECK_LIB([tcmalloc],malloc)])
 AC_ARG_ENABLE(perftools, [  --enable-perftools  enable google performance tools for profiling and heap checking], [LDFLAGS="${LDFLAGS} -Wl --no-as-needed -lprofiler"; LDADD="${LDADD} -lprofiler"], [])
 
 #
@@ -40,7 +40,8 @@ else
 fi
 
 # Set compiler flags.
-AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -Werror -g")
+#AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -Werror -g")
+AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -g")
 AC_SUBST(CXXFLAGS, "-O3")
 AC_SUBST(CFLAGS, "-O3")
 AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include $bamtools_include")
