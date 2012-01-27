@@ -321,33 +321,6 @@ void cs_dump_results(google::dense_hash_map<std::string, CSProbe*> &h_probes)
   }
 }
 
-void count_in_cs(std::istream* probes_stream)
-{
-  CSUtils csu;
-  google::dense_hash_map<std::string, CSProbe*> h_probes;
-  h_probes.set_empty_key("-");
-  cs_load_probes(h_probes, probes_stream, &csu);
-  std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
-  /*
-  int probe_length = h_probes.begin()->first.length();
-  cs_screen_reads(h_probes, probe_length);
-  */
-
-  cs_dump_results(h_probes);
-}
-
-void count_in_ss(std::istream* probes_stream)
-{
-  google::dense_hash_map<std::string, Probe*> h_probes;
-  h_probes.set_empty_key("-");
-  load_probes(h_probes, probes_stream);
-  std::cerr << "# of probes (RC included): " << h_probes.size() << std::endl;
-  //int probe_length = h_probes.begin()->first.length();
-  //screen_reads(h_probes, probe_length);
-
-  dump_results(h_probes);
-}
-
 int load_to_buffer(SeqReader *reader, std::string **buffer)
 {
   int n_rr = 0; // number of reads read
