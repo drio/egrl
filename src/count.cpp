@@ -16,6 +16,7 @@
 
 #include "Util/Util.h"
 #include "Util/SeqReader.h"
+#include "Util/Timer.h"
 
 // Getopt
 #define SUBPROGRAM "count"
@@ -110,6 +111,7 @@ void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes, std::ist
 {
   std::string line;
   Probe *p, *rc_p;
+  Timer timer("Probe loading (SS)");
   // TODO: Confirm that the probe size is constant
   //
   while (getline(*probes, line)) {
@@ -209,7 +211,7 @@ void cs_load_probes(google::dense_hash_map<std::string, CSProbe*> &h_probes,
 {
   std::string line;
   CSProbe *p, *rc_p;
-
+  Timer timer("Probe loading (CS)");
   // TODO: Confirm that the probe size is constant
   //
   // TODO: There is no need to store all the sequence information of the probe
@@ -375,6 +377,7 @@ void count_main(int argc, char **argv)
   }
 
   /* Process reads */
+  Timer *timer = new Timer("Processing reads");
   std::string **buffer;
   // request mem for buffer of reads
   buffer = (std::string **) calloc(sizeof(std::string *), BUFFER_SIZE);
@@ -415,6 +418,7 @@ void count_main(int argc, char **argv)
     std::cerr << ">> Total # of reads processed so far: " << total << std::endl;
     free(data); free(tid);
   }
+  delete timer; // force dump cpu time.
 
   // Dump results
   if (opt::cs_data) cs_dump_results(probes.cs);
