@@ -352,6 +352,7 @@ static void *worker(void *data)
 
 void count_main(int argc, char **argv)
 {
+  Timer *total_timer = new Timer("count_main");
   parse_count_options(argc, argv);
 
   std::istream* probes_stream;
@@ -377,7 +378,6 @@ void count_main(int argc, char **argv)
   }
 
   /* Process reads */
-  Timer *timer = new Timer("Processing reads");
   std::string **buffer;
   // request mem for buffer of reads
   buffer = (std::string **) calloc(sizeof(std::string *), BUFFER_SIZE);
@@ -385,6 +385,7 @@ void count_main(int argc, char **argv)
   int total = 0; // total number of reads processed
   SeqReader reader(opt::reads_file, SRF_NO_VALIDATION);
   while((n_rr = load_to_buffer(&reader, buffer)) != 0) {
+    Timer *pr_timer = new Timer("Processing reads");
     std::cerr << ">> Computing screen on " << n_rr << " reads" << std::endl;
     total += n_rr;
     // Do stuff with data in buffer
@@ -417,8 +418,8 @@ void count_main(int argc, char **argv)
     std::cerr << ">> Done computing " << n_rr << " reads" << std::endl;
     std::cerr << ">> Total # of reads processed so far: " << total << std::endl;
     free(data); free(tid);
+    delete pr_timer; // force dump cpu time.
   }
-  delete timer; // force dump cpu time.
 
   // Dump results
   if (opt::cs_data) cs_dump_results(probes.cs);
@@ -426,6 +427,7 @@ void count_main(int argc, char **argv)
 
   delete probes_stream;
   for (int j=0; j<BUFFER_SIZE; j++) delete buffer[j];
+  delete total_timer;
   // TODO: Free probes
 
   /*
