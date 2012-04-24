@@ -13,7 +13,6 @@ static const char *EGRL_USAGE =
 "Usage:   " PROGRAM_BIN " <command> [options]\n\n"
 "Commands:\n"
 " count      Screen reads using probes.\n"
-" other      other here\n"
 "\nReport bugs to " PACKAGE_BUGREPORT "\n\n";
 
 int main(int argc, char** argv)
