@@ -23,5 +23,9 @@ generate the CS version while processing the input data.
 
 ## Usage
 
-Underconstruction ...
+```
+$ git clone git@github.com:drio/egrl.git
+$ sh ./autogen.sh && ./configure && make && make install
+$ egrl
+```
 
