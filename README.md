@@ -1,7 +1,7 @@
 # Intro
 
 Egrl is a fresh implementation of e-genotype, an allele screening method for
-(Next-Gen sequencing data)[http://en.wikipedia.org/wiki/DNA_sequencing].
+[Next-Gen sequencing data](http://en.wikipedia.org/wiki/DNA_sequencing).
 
 ## What's new
 
@@ -9,7 +9,7 @@ Here's some of the new features:
 
 1. probes and reads can be feed in the stdin. Yes, who doesn't love Unix?
 This also allows the processing of data from
-(bam/sam)[http://samtools.sourceforge.net/SAM1.pdf].
+[bam/sam](http://samtools.sourceforge.net/SAM1.pdf).
 
 2. Fasta(q) allowed.
 
@@ -19,7 +19,7 @@ This also allows the processing of data from
 Probes can be fed in sequence space and the tool will automatically
 generate the CS version while processing the input data.
 
-5. Multithreading support.
+5. [https://gist.github.com/1657289](Multithreading) support.
 
 ## Usage
 
