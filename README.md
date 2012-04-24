@@ -19,7 +19,7 @@ This also allows the processing of data from
 Probes can be fed in sequence space and the tool will automatically
 generate the CS version while processing the input data.
 
-5. [https://gist.github.com/1657289](Multithreading) support.
+5. [MultiThreading](https://gist.github.com/1657289) support.
 
 ## Usage
 
