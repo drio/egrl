@@ -8,7 +8,8 @@
 static const char *EGRL_USAGE =
 "Program: " PACKAGE_NAME "\n"
 "Version: " PACKAGE_VERSION "\n"
-"Contact: " AUTHOR " [ PACKAGE_BUGREPORT ]\n"
+"Contact: " AUTHOR "\n"
+"Support: " PACKAGE_BUGREPORT "\n"
 "Usage:   " PROGRAM_BIN " <command> [options]\n\n"
 "Commands:\n"
 " count      Screen reads using probes.\n"
