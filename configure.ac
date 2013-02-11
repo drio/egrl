@@ -27,6 +27,8 @@ fi
 #AC_ARG_ENABLE(tcmalloc, [  --disable-tcmalloc disable tcmalloc for memory allocation], [], [AC_CHECK_LIB([tcmalloc],malloc)])
 AC_ARG_ENABLE(perftools, [  --enable-perftools  enable google performance tools for profiling and heap checking], [LDFLAGS="${LDFLAGS} -Wl --no-as-needed -lprofiler"; LDADD="${LDADD} -lprofiler"], [])
 
+AC_CHECK_LIB(pthread, pthread_create,, [AC_MSG_ERROR([required   library pthread missing])])
+
 #
 AC_MSG_CHECKING(whether this is a git repository)
 gitrev="`git log 2>/dev/null | grep -m 1 commit | awk '{print $2}'`";
