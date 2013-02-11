@@ -7,7 +7,6 @@
 #include "Util/Util.h"
 #include "Util/SeqReader.h"
 
-#include <google/sparsehash/sparseconfig.h>
 #include <google/sparse_hash_map>
 #include <google/dense_hash_map>
 
