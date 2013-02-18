@@ -41,22 +41,30 @@ else
     AC_MSG_RESULT(no)
 fi
 
+# Check for the google sparse hash
+AC_ARG_WITH(sparsehash, AS_HELP_STRING([--with-sparsehash=PATH],
+            [specify directory containing the google sparsehash headers http://code.google.com/p/google-sparsehash/)]))
+
+if test "$with_sparsehash" -a -d "$with_sparsehash"; then
+  sparsehash_include="-I$with_sparsehash/include"
+fi
+
 # Set compiler flags.
 #AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -Werror -g")
 AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra -g")
-AC_SUBST(CXXFLAGS, "-O3")
-AC_SUBST(CFLAGS, "-O3")
-AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include $bamtools_include")
+AC_SUBST(CXXFLAGS, "-O2")
+AC_SUBST(CFLAGS, "-O2")
+#AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include $bamtools_include")
+AC_SUBST(CPPFLAGS, "$CPPFLAGS $sparsehash_include")
 
 # Ensure the sparse hash is available
-AC_CHECK_HEADERS([google/sparse_hash_map],,[AC_MSG_ERROR([google sparse hash library is required: http://code.google.com/p/google-sparsehash/])])
-AC_CHECK_HEADERS([google/dense_hash_map],,[AC_MSG_ERROR([google sparse hash library is required: http://code.google.com/p/google-sparsehash/])])
+AC_CHECK_HEADERS([google/sparse_hash_set],,[AC_MSG_ERROR([google sparse hash library is required: http://code.google.com/p/google-sparsehash/])])
 
 # Check for hash table headers
 AC_CHECK_HEADERS([ \
- google/dense_hash_map \
- google/sparse_hash_map \
+  google/sparse_hash_set google/sparse_hash_map \
 ])
+
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
