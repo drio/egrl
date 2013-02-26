@@ -26,6 +26,8 @@ void *screen_reads(ss_probes *, int, std::string **, int, int, pthread_mutex_t *
 
 void dump_results(google::dense_hash_map<std::string, Probe*> &);
 int load_to_buffer(SeqReader *, std::string **);
+void free_up_probes(ss_probes);
+
 
 void count_main(int, char **);
 

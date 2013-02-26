@@ -101,15 +101,15 @@ void parse_count_options(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 }
+
 void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes, std::istream *probes)
 {
   std::string line;
   Probe *p, *rc_p;
   Timer timer("Probe loading (SS)");
-  // TODO: Confirm that the probe size is constant
-  //
+  /* TODO: Confirm that the probe size is constant */
   while (getline(*probes, line)) {
-    // TODO: check if probe already there, if so, ignore, otherwise we will have memory leaks
+    /* TODO: check if probe already there, if so, ignore, otherwise we will have memory leaks */
     p       = new Probe(line);
     rc_p    = new Probe(line);
     rc_p->set_rc();
@@ -138,7 +138,7 @@ void *screen_reads(ss_probes *h_probes,
   std::string n_value(" ");
 
   int p,i; // pointer to buffer, pointer in read
-	for (p=0; p!=n_reads; ++p) {
+  for (p=0; p!=n_reads; ++p) {
     if ((n_threads>1) && (p % n_threads != tid)) continue;
     for (i=0; i+probe_length<=(int) buffer[p]->length(); ++i) {
       window        = buffer[p]->substr(i, probe_length);
@@ -216,10 +216,18 @@ int load_to_buffer(SeqReader *reader, std::string **buffer)
 
 static void *worker(void *data)
 {
-	thread_data *d = (thread_data*) data;
+  thread_data *d = (thread_data*) data;
   screen_reads(d->probes, d->p_len, d->buffer,
                d->n_reads, d->tid, d->mutex, d->n_threads);
-	return 0;
+  return 0;
+}
+
+void free_up_probes(ss_probes h_probes)
+{
+  google::dense_hash_map<std::string, Probe *>::iterator p_iter;
+  for (p_iter=h_probes.begin(); p_iter!=h_probes.end(); p_iter++) {
+    delete p_iter->second;
+  }
 }
 
 void count_main(int argc, char **argv)
@@ -242,7 +250,7 @@ void count_main(int argc, char **argv)
 
   /* Process reads */
   std::string **buffer;
-  // request mem for buffer of reads
+  /* request mem for buffer of reads */
   buffer = (std::string **) calloc(sizeof(std::string *), BUFFER_SIZE);
   int n_rr  = 0;  // number of reads read
   int total = 0;  // total number of reads processed
@@ -257,9 +265,9 @@ void count_main(int argc, char **argv)
     unsigned int j; // to iterate over num of threads
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	  data = (thread_data*) calloc(opt::n_threads, sizeof(thread_data));
-	  tid  = (pthread_t*) calloc(opt::n_threads, sizeof(pthread_t));
-    // create/init mutex
+    data = (thread_data*) calloc(opt::n_threads, sizeof(thread_data));
+    tid  = (pthread_t*) calloc(opt::n_threads, sizeof(pthread_t));
+    /* create/init mutex */
     pthread_mutex_t mutex;
     pthread_mutex_init(&mutex, NULL);
     for (j=0; j<opt::n_threads; ++j) {
@@ -272,7 +280,7 @@ void count_main(int argc, char **argv)
       data[j].n_threads = opt::n_threads;
       pthread_create(&tid[j], &attr, worker, data+j);
     }
-    // join-start threads
+    /* join-start threads */
     for (j=0; j<opt::n_threads; ++j) pthread_join(tid[j], 0);
     std::cerr << ">> Done computing " << n_rr << " reads" << std::endl;
     std::cerr << ">> Total # of reads processed so far: " << total << std::endl;
@@ -281,17 +289,10 @@ void count_main(int argc, char **argv)
   }
 
   dump_results(probes);
-
+  free_up_probes(probes);
   delete probes_stream;
   for (int j=0; j<BUFFER_SIZE; j++) delete buffer[j];
+  free(buffer);
   delete total_timer;
-  // TODO: Free probes
-
-  /*
-  std::cout << "verbose: " << opt::verbose     << std::endl;
-  std::cout << "cs     : " << opt::cs_data     << std::endl;
-  std::cout << "probes : " << opt::probes_file << std::endl;
-  std::cout << "reads  : " << opt::reads_file  << std::endl;
-  */
 }
 
