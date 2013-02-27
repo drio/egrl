@@ -98,15 +98,13 @@ The last five columns add the hits from the previous columns.
 
 ## Usage (hits)
 
-There is another useful command (hits) that enumerates all the
-hits to any of the probes. This command dumps directly to stdin
-the probe id, the allele seen and the read id as soon as any
-read hits any of the probes.
+There is another useful command that enumerates all the hits to any of the
+probes. As soon as we find a hit, this is dumped to the stdin. Each hits
+consists on the probe id, the allele seen and the read id.
 
-This subcommand uses much less memory since we are not storing
-the hits in memory. You may find useful that the read id is
-associated with the hit, something we don't report in the count
-mode.
+```egrl hits``` uses much less memory since we are not storing in memory
+the information related to a hit. Notice also we are reporting the read
+that hit the probe. You may find that useful.
 
 Here you have a running example against an illumina dataset.
 
