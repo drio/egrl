@@ -13,6 +13,7 @@ egrl_SOURCES = \
 	src/Util/Quality.cpp src/Util/Quality.h \
 	src/Util/SeqReader.cpp src/Util/SeqReader.h \
 	src/Util/Util.cpp src/Util/Util.h \
+	src/hits.cpp src/hits.h\
 	src/count.cpp src/count.h \
 	src/probe.cpp src/probe.h \
 	src/egrl.cpp

@@ -4,6 +4,7 @@
 #include "config.h"
 #include "probe.h"
 #include "count.h"
+#include "hits.h"
 
 static const char *EGRL_USAGE =
 "Program: " PACKAGE_NAME "\n"
@@ -12,7 +13,8 @@ static const char *EGRL_USAGE =
 "Support: " PACKAGE_BUGREPORT "\n"
 "Usage:   " PROGRAM_BIN " <command> [options]\n\n"
 "Commands:\n"
-" count      Screen reads using probes.\n"
+" count     Screen reads using probes.\n"
+" hits      Dump hits to probes as soon as you find them.\n"
 "\nReport bugs to " PACKAGE_BUGREPORT "\n\n";
 
 int main(int argc, char** argv)
@@ -33,6 +35,8 @@ int main(int argc, char** argv)
     }
     if(command == "count")
       count_main(argc - 1, argv + 1);
+    else if(command == "hits")
+      hits_main(argc - 1, argv + 1);
     else {
       std::cerr << "Unrecognized command: " << command << std::endl;
       return 1;

@@ -102,7 +102,7 @@ void parse_count_options(int argc, char **argv)
   }
 }
 
-void load_probes(google::dense_hash_map<std::string, Probe*> &h_probes, std::istream *probes)
+void load_probes(ss_probes &h_probes, std::istream *probes)
 {
   std::string line;
   Probe *p, *rc_p;

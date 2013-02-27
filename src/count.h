@@ -21,7 +21,7 @@ typedef struct {
 } thread_data;
 
 void parse_count_options(int, char **);
-void load_probes(google::dense_hash_map<std::string, Probe*> *, std::istream *);
+void load_probes(ss_probes &, std::istream *);
 void *screen_reads(ss_probes *, int, std::string **, int, int, pthread_mutex_t *, int);
 
 void dump_results(google::dense_hash_map<std::string, Probe*> &);
