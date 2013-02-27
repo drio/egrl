@@ -19,6 +19,8 @@ This also allows the processing of data from
 
 5. Variable flanking sequence length.
 
+6. New execution mode that reports hits as they are seen.
+
 ## Usage (count)
 
 ```
