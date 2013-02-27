@@ -115,7 +115,10 @@ void hits_main(int argc, char **argv)
   int probe_length;
   probe_length = probes.begin()->first.length();
 
-  /* Process reads */
+  /*
+   * Screen the reads to see if we hit any probes, if so report the probe id, allele seen and
+   * the read id
+   */
   SeqReader reader(opt::reads_file, SRF_NO_VALIDATION);
   SeqRecord record;
   std::string *read;
@@ -124,24 +127,34 @@ void hits_main(int argc, char **argv)
   std::string window, n_value;
   int n_pos = probe_length/2;
   Probe *op; // Original probe
-  /*
-   * Screen the reads to see if we hit any probes, if so report the probe id, allele seen and
-   * the read id
-   */
+  uint64_t nrp = 1;
+  int report_when = 100000;
+  std::string timer_msg("Time spent computing reads:");
+  Timer *pr_timer = new Timer(timer_msg);
   while (reader.get(record)) {
-   n_value = " ";
-   read    = new std::string(record.seq.toString());
-   for (i=0; i+probe_length<=(int) read->length(); ++i) {
-     window     = read->substr(i, probe_length);
-     n_value[0] = window[n_pos];
-     window[n_pos] = 'N';
-     if ((p_iter = probes.find(window)) != probes.end()) {
-       op = p_iter->second->is_a_rc_probe ? p_iter->second->rc : p_iter->second;
-       std::cout << op->get_id() << "," << n_value << "," << record.id << std::endl;
-     }
+    n_value = " ";
+    read    = new std::string(record.seq.toString());
+
+    for (i=0; i+probe_length<=(int) read->length(); ++i) {
+      window     = read->substr(i, probe_length);
+      n_value[0] = window[n_pos];
+      window[n_pos] = 'N';
+      if ((p_iter = probes.find(window)) != probes.end()) {
+        op = p_iter->second->is_a_rc_probe ? p_iter->second->rc : p_iter->second;
+        std::cout << op->get_id() << "," << n_value << "," << record.id << std::endl;
+      }
     }
+
+    if (nrp % report_when == 0) {
+     std::cerr << ">> Number of reads processed so far: " << nrp << std::endl;
+     delete pr_timer;
+     pr_timer = new Timer(timer_msg);
+    }
+    nrp++;
   }
 
+  std::cerr << ">> Done. Total number of reads: " << nrp << std::endl;
+  delete pr_timer;
   free_up_probes(probes);
   delete probes_stream;
   delete total_timer;
