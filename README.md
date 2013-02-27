@@ -100,14 +100,15 @@ The last five columns add the hits from the previous columns.
 
 There is another useful command (hits) that enumerates all the
 hits to any of the probes. This command dumps directly to stdin
-those hits, consisting in the probe id, the allele seen and the
-read id that hits the probe.
+the probe id, the allele seen and the read id as soon as any
+read hits any of the probes.
 
-This command uses much less memory since the hits are not stored
-but reported immediately. The report of the read id per each
-hit is also helpful in some projects.
+This subcommand uses much less memory since we are not storing
+the hits in memory. You may find useful that the read id is
+associated with the hit, something we don't report in the count
+mode.
 
-Here you have a running example against a bunch of illumina reads.
+Here you have a running example against an illumina dataset.
 
 ```
 $ egrl hits -p tests/probes.small.txt -r tests/reads.small.fq
