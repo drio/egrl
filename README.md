@@ -19,7 +19,7 @@ This also allows the processing of data from
 
 5. Variable flanking sequence length.
 
-## Usage
+## Usage (count)
 
 ```
 $ git clone git@github.com:drio/egrl.git
@@ -95,3 +95,31 @@ the ref allele, to the variant, to the alternative allele1
 and the alternative allele2. The next five columns are the
 same but from hits to the reverse complement of the probe.
 The last five columns add the hits from the previous columns.
+
+## Usage (hits)
+
+There is another useful command (hits) that enumerates all the
+hits to any of the probes. This command dumps directly to stdin
+those hits, consisting in the probe id, the allele seen and the
+read id that hits the probe.
+
+This command uses much less memory since the hits are not stored
+but reported immediately. The report of the read id per each
+hit is also helpful in some projects.
+
+Here you have a running example against a bunch of illumina reads.
+
+```
+$ egrl hits -p tests/probes.small.txt -r tests/reads.small.fq
+>> Loading probes
+[timer - Probe loading (SS)] wall clock: 0.23s CPU: 0.23s
+>> # of probes (RC included): 40000
+rs8067076,A,DCT4KXP1:297:C196LACXX:1:1101:3921:2216
+rs2073067,G,DCT4KXP1:297:C196LACXX:1:1101:7679:2092
+rs1065767,G,DCT4KXP1:297:C196LACXX:1:1101:8842:2157
+rs10509305,A,DCT4KXP1:297:C196LACXX:1:1101:16274:2067
+rs4844831,G,DCT4KXP1:297:C196LACXX:1:1101:7721:2569
+rs7093194,G,DCT4KXP1:297:C196LACXX:1:1101:7698:2966
+rs2272379,A,DCT4KXP1:297:C196LACXX:1:1101:9899:3023
+[timer - count_main] wall clock: 0.46s CPU: 0.46s
+```
