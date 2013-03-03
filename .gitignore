@@ -1,3 +1,13 @@
 .*.swp
 *.o
 test
+src/.dirstamp
+src/Thirdparty/.dirstamp
+src/Util/.dirstamp
+tags
+tests/Makefile.am
+tests/Makefile.am.play
+tests/play_time.sh
+tests/playground.cpp
+tests/read.csfasta
+tests/serious_time.sh

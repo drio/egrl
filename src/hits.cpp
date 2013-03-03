@@ -121,22 +121,21 @@ void hits_main(int argc, char **argv)
    */
   SeqReader reader(opt::reads_file, SRF_NO_VALIDATION);
   SeqRecord record;
-  std::string *read;
   ss_probes::iterator p_iter;
   int i;
-  std::string window, n_value;
   int n_pos = probe_length/2;
   Probe *op; // Original probe
   uint64_t nrp = 1;
   int report_when = 100000;
   std::string timer_msg("Time spent computing reads:");
   Timer *pr_timer = new Timer(timer_msg);
+  std::string read, window, n_value;
   while (reader.get(record)) {
+    read = std::string(record.seq.toString());
+    /* Screening logic */
     n_value = " ";
-    read    = new std::string(record.seq.toString());
-
-    for (i=0; i+probe_length<=(int) read->length(); ++i) {
-      window     = read->substr(i, probe_length);
+    for (i=0; i+probe_length<=(int) read.length(); ++i) {
+      window     = read.substr(i, probe_length);
       n_value[0] = window[n_pos];
       window[n_pos] = 'N';
       if ((p_iter = probes.find(window)) != probes.end()) {
@@ -146,9 +145,9 @@ void hits_main(int argc, char **argv)
     }
 
     if (nrp % report_when == 0) {
-     std::cerr << ">> Number of reads processed so far: " << nrp << std::endl;
-     delete pr_timer;
-     pr_timer = new Timer(timer_msg);
+      std::cerr << ">> Number of reads processed so far: " << nrp << std::endl;
+      delete pr_timer;
+      pr_timer = new Timer(timer_msg);
     }
     nrp++;
   }

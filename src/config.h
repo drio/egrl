@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "0.0.9"
+#define VERSION "0.1"
 #define PROGRAM_BIN "egrl"
 #define AUTHOR "David Rio Deiros"
 #define PACKAGE_BUGREPORT "https://github.com/drio/egrl/issues"
